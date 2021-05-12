@@ -5,24 +5,27 @@ import ru.abdullaev.model.City;
 import java.util.*;
 
 public class CityService {
-    public void printAll(List<City> list){
-        list.forEach(System.out::println);
+
+    private List<City> list;
+
+    public CityService(List<City> list) {
+        this.list = list;
     }
 
-    public void sortByNameAndPrint(List<City> list){
+    public List<City> sortByName(){
         List<City> cities = new ArrayList<>(list);
         cities.sort(Comparator.comparing(o -> o.getName().toLowerCase()));
-        cities.forEach(System.out::println);
+        return cities;
     }
 
-    public void sortByDistrictThanByNameAndPrint(List<City> list){
+    public List<City> sortByDistrictThanByName(){
         List<City> cities = new ArrayList<>(list);
         cities.sort(Comparator.comparing(City::getDistrict)
                 .thenComparing(City::getName));
-        cities.forEach(System.out::println);
+        return cities;
     }
 
-    public String maxPopulationCity(List<City> list){
+    public String maxPopulationCity(){
         int maxPopulation = 0;
         int maxIndex =0;
         for (int i = 0; i < list.size(); i++) {
@@ -35,7 +38,7 @@ public class CityService {
         return String.format("[%d] = %,d", maxIndex, maxPopulation);
     }
 
-    public void countCitiesByRegionAndPrint(List<City> list){
+    public List<String> countCitiesByRegion(){
         Map<String, Integer> hashMap = new HashMap<>();
         for (City city: list) {
             Integer count = hashMap.get(city.getRegion());
@@ -45,10 +48,12 @@ public class CityService {
                 hashMap.put(city.getRegion(),count+1);
             }
         }
+        List<String> citiesByRegion = new ArrayList<>();
         Set<String> strings = hashMap.keySet();
         for (String region: strings) {
-            System.out.println(region + " - " +hashMap.get(region));
+            citiesByRegion.add(region + " - " + hashMap.get(region));
         }
+        return citiesByRegion;
     }
 
 

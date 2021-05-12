@@ -15,9 +15,7 @@ public class FirstModuleTest {
 
     @Test
     public void correctSaveToListTest() throws FileNotFoundException {
-        InOutService inOutService = new InOutService();
-        inOutService.readToList(getClass().getResource("first_module.txt").getFile());
-        List<City> cityList = inOutService.getCityList();
+        List<City> cityList = new InOutService().readToList(getClass().getResource("first_module.txt").getFile());
         City fromFile = cityList.get(0);
         City city = new City("Агрыз","Татарстан","Приволжский",19299,"1646");
         Assert.assertEquals(city,fromFile);
