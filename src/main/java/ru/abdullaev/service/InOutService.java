@@ -24,7 +24,8 @@ public class InOutService {
         System.out.println(cityService.maxPopulationCity());
         System.out.println("Модуль 4- Поиск количества городов в разрезе регионов");
         cityService.countCitiesByRegion().forEach(System.out::println);*/
-        CityRepository.init();
+       // CityRepository.init();
+        CityRepository cityRepository = new CityRepository("jdbc:h2:/Users/a19188821/IdeaProjects/CityBook/src/main/resources/cities;MV_STORE=false");
         Scanner scan = new Scanner(System.in);
         int x;
         String s = "";
@@ -65,38 +66,38 @@ public class InOutService {
                         cityService.countCitiesByRegion().forEach(System.out::println);
                         break;
                     case 6:
-                        CityRepository.findAll().forEach(System.out::println);
+                        cityRepository.findAll().forEach(System.out::println);
                         break;
                     case 7:
-                        CityRepository.addCity(new City("SPB", "SPB", "LEN", 200000, "1730"));
-                        CityRepository.findAll().forEach(System.out::println);
+                        cityRepository.addCity(new City("SPB", "SPB", "LEN", 200000, "1730"));
+                        cityRepository.findAll().forEach(System.out::println);
                         break;
                     case 8:
-                        CityRepository.editCity(new City("SPB123",
+                        cityRepository.editCity(new City("SPB123",
                                 "SPB", "LENIN",
                                 200000, "1730"),
                                 "SPB123");
-                        CityRepository.findAll().forEach(System.out::println);
+                        cityRepository.findAll().forEach(System.out::println);
                         break;
                     case 9:
-                        CityRepository.deleteCity("SPB123");
-                        CityRepository.findAll().forEach(System.out::println);
+                        cityRepository.deleteCity("SPB123");
+                        cityRepository.findAll().forEach(System.out::println);
                         break;
                     case 10:
-                        System.out.println(CityRepository.findCity("SPB123").get());
+                        System.out.println(cityRepository.findCity("SPB123").get());
                         break;
                     case 11:
-                        CityRepository.findAllSortedByName().forEach(System.out::println);
+                        cityRepository.findAllSortedByName().forEach(System.out::println);
                         break;
                     case 12:
-                        CityRepository.findAllSortedByDistrict().forEach(System.out::println);
+                        cityRepository.findAllSortedByDistrict().forEach(System.out::println);
                         break;
                     case 13:
-                        System.out.println(CityRepository.maxPopulationCity());
+                        System.out.println(cityRepository.maxPopulationCity());
                         break;
                     case 14:
                         StringBuilder stringBuilder = new StringBuilder();
-                        CityRepository.countByRegions().forEach((key, value) -> stringBuilder.append(key).append(" - ").append(value).append("\n"));
+                        cityRepository.countByRegions().forEach((key, value) -> stringBuilder.append(key).append(" - ").append(value).append("\n"));
                         System.out.println(stringBuilder.toString().trim());
                         break;
 

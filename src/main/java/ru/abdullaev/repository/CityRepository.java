@@ -6,11 +6,11 @@ import java.sql.*;
 import java.util.*;
 
 public class CityRepository {
-    private static final String URL = "jdbc:h2:/Users/a19188821/IdeaProjects/CityBook/src/main/resources/resources;MV_STORE=false";
-    private static Connection connection = null;
+    private final String url;
+   /* private static Connection connection = null;
     private static ResultSet resultSet = null;
-    private static Statement statement = null;
-    private static String createQuery = "CREATE TABLE CITIES(\n" +
+    private static Statement statement = null;*/
+   /* private static String createQuery = "CREATE TABLE CITIES(\n" +
             " id INT PRIMARY KEY AUTO_INCREMENT,\n" +
             " name VARCHAR(255) UNIQUE,\n" +
             " REGION VARCHAR(255),\n" +
@@ -43,9 +43,9 @@ public class CityRepository {
             "VALUES ('Агидель', 'Башкортостан', 'Приволжский', 16365, 1980);\n" +
             "\n" +
             "INSERT INTO CITIES(NAME, REGION, DISTRICT, POPULATION, FOUNDATION)\n" +
-            "VALUES ('Агрыз', 'Татарстан', 'Приволжский', 19299, 1646);";
+            "VALUES ('Агрыз', 'Татарстан', 'Приволжский', 19299, 1646);";*/
 
-    public static boolean init() {
+   /* public static boolean init() {
 
         try {
             connection = DriverManager.getConnection(URL);
@@ -57,12 +57,17 @@ public class CityRepository {
             ex.printStackTrace();
             return false;
         }
+    }*/
+
+    public CityRepository(String url) {
+        this.url = url;
     }
 
-    public static List<City> findAll() {
+    public  List<City> findAll() {
         List<City> list = new ArrayList<>();
-        try {
-            resultSet = statement.executeQuery("SELECT * FROM CITIES");
+        try (Connection connection = DriverManager.getConnection(url);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM CITIES");){
             while (resultSet.next()) {
                 City city = new City(resultSet.getString(2),
                         resultSet.getString(3),
@@ -78,8 +83,9 @@ public class CityRepository {
         return list;
     }
 
-    public static boolean addCity(City city) {
-        try {
+    public  boolean addCity(City city) {
+        try(Connection connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();) {
             statement.execute("INSERT INTO CITIES(NAME, REGION, DISTRICT, POPULATION, FOUNDATION) VALUES ('" + city.getName() + "', '" + city.getRegion() + "', '" + city.getDistrict() + "', " + city.getPopulation() + ", " + city.getFoundation() + ") ;");
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -88,9 +94,10 @@ public class CityRepository {
         return true;
     }
 
-    public static boolean deleteCity(String name) {
+    public  boolean deleteCity(String name) {
         String deleteQuery = "DELETE FROM CITIES WHERE NAME = '" + name + "' " + ";";
-        try {
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement statement = connection.createStatement();) {
             if (statement.executeUpdate(deleteQuery) == 0) {
                 return false;
             }
@@ -102,7 +109,7 @@ public class CityRepository {
         return true;
     }
 
-    public static boolean editCity(City city, String name) {
+    public boolean editCity(City city, String name) {
         /*
         UPDATE CITIES
         SET NAME = city.getName(),
@@ -120,7 +127,8 @@ public class CityRepository {
                 "        POPULATION = " + city.getPopulation() + ",\n" +
                 "        FOUNDATION = " + city.getFoundation() + "\n" +
                 "        WHERE NAME = '" + name + "';";
-        try {
+        try(Connection connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();) {
             return statement.executeUpdate(updateQuery) !=0;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -128,9 +136,11 @@ public class CityRepository {
         return false;
     }
 
-    public static Optional<City> findCity(String name) {
-        try {
-            resultSet = statement.executeQuery("SELECT * FROM CITIES WHERE NAME = '" + name + "';");
+    public Optional<City> findCity(String name) {
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM CITIES WHERE NAME = '" + name + "';")
+             ) {
             resultSet.next();
             City city = new City(resultSet.getString(2),
                     resultSet.getString(3),
@@ -144,10 +154,12 @@ public class CityRepository {
         }
     }
 
-    public static List<City> findAllSortedByName(){
+    public List<City> findAllSortedByName(){
         List<City> list = new ArrayList<>();
-        try {
-            resultSet = statement.executeQuery("SELECT * FROM CITIES ORDER BY LOWER(NAME) ASC");
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM CITIES ORDER BY LOWER(NAME) ASC")
+        ){
             while (resultSet.next()) {
                 City city = new City(resultSet.getString(2),
                         resultSet.getString(3),
@@ -163,10 +175,12 @@ public class CityRepository {
         return list;
     }
 
-    public static List<City> findAllSortedByDistrict(){
+    public List<City> findAllSortedByDistrict(){
         List<City> list = new ArrayList<>();
-        try {
-            resultSet = statement.executeQuery("SELECT * FROM CITIES ORDER BY LOWER(DISTRICT) ASC, LOWER(NAME) ASC");
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM CITIES ORDER BY LOWER(DISTRICT) ASC, LOWER(NAME) ASC")
+        ){
             while (resultSet.next()) {
                 City city = new City(resultSet.getString(2),
                         resultSet.getString(3),
@@ -181,9 +195,11 @@ public class CityRepository {
         }
         return list;
     }
-    public static String maxPopulationCity(){
-        try {
-            resultSet = statement.executeQuery("SELECT ID, POPULATION FROM CITIES ORDER BY POPULATION DESC LIMIT 1;");
+    public String maxPopulationCity(){
+        try(Connection connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT ID, POPULATION FROM CITIES ORDER BY POPULATION DESC LIMIT 1;");
+        )  {
             resultSet.next();
             String res = resultSet.getInt(1) + " - " + resultSet.getInt(2);
             return res;
@@ -192,10 +208,12 @@ public class CityRepository {
             return null;
         }
     }
-    public static Map<String, Integer> countByRegions(){
+    public Map<String, Integer> countByRegions(){
         Map<String, Integer> map = new HashMap<>();
-        try {
-            resultSet = statement.executeQuery("SELECT  REGION, count(name) as quantity from CITIES group by region");
+        try(Connection connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT  REGION, count(name) as quantity from CITIES group by region");
+        )  {
             while (resultSet.next()){
                 map.put(resultSet.getString("Region"), resultSet.getInt("quantity"));
             }
